@@ -166,6 +166,54 @@ void NDLNodeEvaluatorImpl<ElemType>::Evaluate(NDLNode<ElemType>* node, const wst
                     RuntimeError("File pointed to by initFromFilePath does not exist: %s", initFromFilePath.c_str());
                 dynamic_pointer_cast<LearnableParameter<ElemType>>(nodePtr)->InitFromFile(msra::strfun::utf16(initFromFilePath));
             }
+            else if (EqualCI(initString, L"fromFst"))
+            {
+                std::string fstFilePath = node->GetOptionalParameter("fstFilePath", "");
+                if (fstFilePath == "")
+                    RuntimeError("fstFilePath must be set when using \"fromFst\" initialization method");
+                if (fstFilePath[0] == '\"' && fstFilePath[fstFilePath.size() - 1] == '\"')
+                    // remove the opening and closing double quotes
+                    fstFilePath = fstFilePath.substr(1, fstFilePath.size() - 2);
+                if (!fexists(fstFilePath))
+                    RuntimeError("File pointed to by fstFilePath does not exist: %s", fstFilePath.c_str());
+
+                std::string smapFilePath = node->GetOptionalParameter("smapFilePath", "");
+                if (smapFilePath == "")
+                    RuntimeError("smapFilePath must be set when using \"fromFst\" initialization method");
+                if (smapFilePath[0] == '\"' && smapFilePath[smapFilePath.size() - 1] == '\"')
+                    // remove the opening and closing double quotes
+                    smapFilePath = smapFilePath.substr(1, smapFilePath.size() - 2);
+                if (!fexists(smapFilePath))
+                    RuntimeError("File pointed to by smapFilePath does not exist: %s", smapFilePath.c_str());
+
+                ElemType selfTransitionProbability = (ElemType)atof(node->GetOptionalParameter("selfTransitionProbability", ""));
+                ElemType forwardTransitionProbability = (ElemType)atof(node->GetOptionalParameter("forwardTransitionProbability", ""));
+                dynamic_pointer_cast<LearnableParameter<ElemType>>(nodePtr)->InitFromFst(msra::strfun::utf16(fstFilePath), msra::strfun::utf16(smapFilePath), selfTransitionProbability, forwardTransitionProbability);
+            }
+            else if (EqualCI(initString, L"fromSmap"))
+            {
+                std::string fstFilePath = node->GetOptionalParameter("fstFilePath", "");
+                if (fstFilePath == "")
+                    RuntimeError("fstFilePath must be set when using \"fromSmap\" initialization method");
+                if (fstFilePath[0] == '\"' && fstFilePath[fstFilePath.size() - 1] == '\"')
+                    // remove the opening and closing double quotes
+                    fstFilePath = fstFilePath.substr(1, fstFilePath.size() - 2);
+                if (!fexists(fstFilePath))
+                    RuntimeError("File pointed to by fstFilePath does not exist: %s", fstFilePath.c_str());
+
+                std::string smapFilePath = node->GetOptionalParameter("smapFilePath", "");
+                if (smapFilePath == "")
+                    RuntimeError("smapFilePath must be set when using \"fromFst\" initialization method");
+                if (smapFilePath[0] == '\"' && smapFilePath[smapFilePath.size() - 1] == '\"')
+                    // remove the opening and closing double quotes
+                    smapFilePath = smapFilePath.substr(1, smapFilePath.size() - 2);
+                if (!fexists(smapFilePath))
+                    RuntimeError("File pointed to by smapFilePath does not exist: %s", smapFilePath.c_str());
+
+                ElemType selfTransitionProbability = (ElemType)atof(node->GetOptionalParameter("selfTransitionProbability", ""));
+                ElemType forwardTransitionProbability = (ElemType)atof(node->GetOptionalParameter("forwardTransitionProbability", ""));
+                dynamic_pointer_cast<LearnableParameter<ElemType>>(nodePtr)->InitFromSmap(msra::strfun::utf16(fstFilePath), msra::strfun::utf16(smapFilePath), selfTransitionProbability, forwardTransitionProbability);
+            }
             else
                 RuntimeError("'init' must be one of the values of [ uniform | gaussian | fixedValue ]");
         }
