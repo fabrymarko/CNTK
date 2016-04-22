@@ -16,7 +16,7 @@
 #ifdef _WIN32
 #include <Windows.h>
 #endif
-#if __unix__
+#ifdef __unix__
 #include <dlfcn.h> // for Plugin
 #endif
 #include <cctype>
@@ -25,7 +25,7 @@
 #define TWO_PI 6.283185307f // TODO: find the official standards-confirming definition of this and use it instead
 
 #define EPSILON 1e-5
-#define ISCLOSE(a, b, threshold) (abs(a - b) < threshold) ? true : false
+#define ISCLOSE(a, b, threshold) (abs((a) - (b)) < (threshold))
 
 #define UNUSED(x) (void)(x) // for variables that are, e.g., only used in _DEBUG builds
 

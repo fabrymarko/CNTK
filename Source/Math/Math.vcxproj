@@ -49,35 +49,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <!-- TODO intentional for all? -->
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>$(DebugBuild)</LinkIncremental>
     <TargetName>Math</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ACML_PATH)\include;$(SolutionDir)Source\Common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
-      <AdditionalLibraryDirectories>$(ACML_PATH)\lib;$(OutDir)</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="$(DebugBuild)">
-    <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>USE_ACML; NO_SYNC; WIN32; _DEBUG; _WINDOWS; _USRDLL; MATH_EXPORTS; %(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <Optimization>Disabled</Optimization>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <OpenMPSupport>true</OpenMPSupport>
-      <MinimalRebuild>false</MinimalRebuild>
       <TreatWarningAsError>true</TreatWarningAsError>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libacml_mp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ACML_PATH)\lib;$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CommonLib.lib;libacml_mp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>libacml_mp_dll.dll; $(CudaDlls); %(DelayLoadDLLs)</DelayLoadDLLs>
       <Profile>true</Profile>
     </Link>
@@ -85,6 +72,16 @@
       <Command>xcopy /D /I /Y "$(ACML_PATH)\lib\*.dll" "$(OutputPath)"</Command>
       <Message>Copying ACML DLLs</Message>
     </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="$(DebugBuild)">
+    <ClCompile>
+      <PreprocessorDefinitions>USE_ACML; NO_SYNC; WIN32; _DEBUG; _WINDOWS; _USRDLL; MATH_EXPORTS; %(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <MinimalRebuild>false</MinimalRebuild>
+    </ClCompile>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CodeGeneration>compute_20,sm_20;compute_30,sm_30;compute_35,sm_35;compute_50,sm_50;</CodeGeneration>
@@ -98,8 +95,6 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="$(ReleaseBuild)">
     <ClCompile>
-      <WarningLevel>Level4</WarningLevel>
-      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -107,26 +102,15 @@
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <OpenMPSupport>true</OpenMPSupport>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <FloatingPointExceptions>false</FloatingPointExceptions>
-      <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/d2Zi+ %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>libacml_mp_dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>true</Profile>
-      <DelayLoadDLLs>libacml_mp_dll.dll; $(CudaDlls); %(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /D /I /Y "$(ACML_PATH)\lib\*.dll" "$(OutputPath)"</Command>
-      <Message>Copying ACML DLLs</Message>
-    </PostBuildEvent>
     <CudaCompile>
       <FastMath>true</FastMath>
       <TargetMachinePlatform>64</TargetMachinePlatform>
@@ -189,21 +173,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Common\ExceptionWithCallStack.cpp" />
-    <ClCompile Include="..\Common\File.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\Common\fileutil.cpp">
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="BatchNormalizationEngine.cpp" />
     <ClCompile Include="ConvolutionEngine.cpp" />
     <ClCompile Include="CPUSparseMatrix.cpp" />
     <ClCompile Include="CUDAPageLockedMemAllocator.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged>false</CompileAsManaged>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="CPUMatrix.cpp" />
     <ClCompile Include="MatrixQuantizerCPU.cpp" />
@@ -211,9 +186,6 @@
     <ClCompile Include="NoGPU.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="QuantizedMatrix.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="TensorView.cpp" />
   </ItemGroup>
   <ItemGroup>
